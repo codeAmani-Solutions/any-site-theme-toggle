@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Any Site Theme</title>
+  <style>
+    body { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 12px; }
+    button { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
+    button:hover { border-color: #6366f1; color: #6366f1; }
+  </style>
+</head>
+<body>
+  <div><strong>Current site</strong></div>
+  <p>
+    <button id="reset">Reset theme to System</button>
+  </p>
+  <script>
+    const keyFor = host => `anysite.theme.${host}`;
+    document.getElementById("reset").addEventListener("click", async () => {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const host = new URL(tab.url).hostname;
+      await chrome.storage.local.set({ [keyFor(host)]: "system" });
+      chrome.tabs.reload(tab.id);
+      window.close();
+    });
+  </script>
+</body>
+</html>
