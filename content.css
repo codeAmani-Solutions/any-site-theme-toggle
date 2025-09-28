@@ -1,0 +1,61 @@
+/* Global dark mode base using invert trick for sites without native dark */
+html.__anysite_dark {
+  background: #0b0b0d !important;
+  color-scheme: dark;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Fix media so they look normal */
+html.__anysite_dark img,
+html.__anysite_dark video,
+html.__anysite_dark picture,
+html.__anysite_dark canvas,
+html.__anysite_dark svg {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Floating widget styles (also linked inside shadow) */
+.anysite-host {
+  all: initial;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.anysite-card {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(17, 17, 20, 0.85);
+  color: #e5e7eb;
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.anysite-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.anysite-btn:hover { color: #a5b4fc; }
+.anysite-btn[aria-pressed="true"] {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  color: #fff;
+}
+
+@media (max-width: 420px) {
+  .anysite-card { gap: 6px; padding: 6px; }
+  .anysite-btn { width: 30px; height: 30px; }
+}
