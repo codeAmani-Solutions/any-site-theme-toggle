@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Any Site Theme Options</title>
+  <style>
+    body { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 16px; }
+    textarea { width: 520px; height: 220px; }
+    .row { margin: 10px 0; }
+    button { padding: 6px 10px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
+    button:hover { border-color: #6366f1; color: #6366f1; }
+    code { background: #f5f5f7; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h2>Allow list</h2>
+  <p>One domain per line. Examples</p>
+  <ul>
+    <li><code>portal2.thompsoncs.net</code></li>
+    <li><code>example.com</code> matches example.com and any subdomain</li>
+    <li><code>*.example.org</code> matches any subdomain of example.org only</li>
+  </ul>
+
+  <div class="row">
+    <textarea id="listBox" placeholder="portal2.thompsoncs.net&#10;example.com"></textarea>
+  </div>
+  <div class="row">
+    <button id="saveBtn">Save</button>
+    <button id="addCurrent">Add current domain</button>
+    <span id="msg" style="margin-left:8px;"></span>
+  </div>
+
+  <script>
+    const box = document.getElementById("listBox");
+    const msg = document.getElementById("msg");
+
+    function normalize(lines) {
+      return lines.map(s => s.trim()).filter(Boolean).filter((s, i, a) => a.indexOf(s) === i);
+    }
+
+    chrome.storage.sync.get(["allowList"], v => {
+      const list = Array.isArray(v.allowList) ? v.allowList : [];
+      box.value = list.join("\n");
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      const list = normalize(box.value.split(/\r?\n/));
+      chrome.storage.sync.set({ allowList: list }, () => {
+        msg.textContent = "Saved";
+        setTimeout(() => (msg.textContent = ""), 1200);
+      });
+    });
+
+    document.getElementById("addCurrent").addEventListener("click", async () => {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      try {
+        const host = new URL(tab.url).hostname;
+        const lines = normalize((box.value || "").split(/\r?\n/).concat(host));
+        box.value = lines.join("\n");
+        chrome.storage.sync.set({ allowList: lines }, () => {
+          msg.textContent = `Added ${host}`;
+          setTimeout(() => (msg.textContent = ""), 1200);
+        });
+      } catch {}
+    });
+  </script>
+</body>
+</html>
